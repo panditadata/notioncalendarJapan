@@ -8,30 +8,58 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
         }
         .calendar {
             display: inline-block;
-            border: 1px solid #000;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
             padding: 20px;
             margin-top: 20px;
+            width: 90%;
+            max-width: 800px;
         }
         .calendar select {
-            font-size: 16px;
-            padding: 5px;
-            margin-bottom: 10px;
+            font-size: 18px;
+            padding: 8px;
+            margin: 10px 5px;
         }
         .calendar table {
             border-collapse: collapse;
             width: 100%;
+            margin-top: 10px;
         }
         .calendar th, .calendar td {
-            border: 1px solid #ccc;
-            padding: 10px;
+            border: 1px solid #ddd;
+            padding: 15px;
             text-align: center;
+            vertical-align: top;
             width: 14.28%;
+        }
+        .calendar th {
+            background-color: #f7f7f7;
+            font-weight: bold;
+        }
+        .calendar textarea {
+            width: 90%;
+            height: 60px;
+            font-size: 14px;
+            margin-top: 5px;
+            resize: none;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        .emoticon-select {
+            margin-top: 10px;
+            font-size: 18px;
         }
         .emoticon {
             font-size: 24px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -40,6 +68,11 @@
 <h1>Japanese Emoticon Calendar</h1>
 
 <div class="calendar">
+    <label for="year-select">Select Year:</label>
+    <select id="year-select" onchange="generateCalendar()">
+        <!-- Years will be populated dynamically -->
+    </select>
+
     <label for="month-select">Select Month:</label>
     <select id="month-select" onchange="generateCalendar()">
         <option value="0">January</option>
@@ -55,27 +88,54 @@
         <option value="10">November</option>
         <option value="11">December</option>
     </select>
-    
+
+    <div class="emoticon-select">
+        <label for="emoticon-select">Select Emoticon:</label>
+        <select id="emoticon-select">
+            <option value="(＾▽＾)">(＾▽＾)</option>
+            <option value="(´｡• ω •｡`)">(´｡• ω •｡`)</option>
+            <option value="(o^▽^o)">(o^▽^o)</option>
+            <option value="(⌒▽⌒)☆">(⌒▽⌒)☆</option>
+            <option value="(✿◠‿◠)">(✿◠‿◠)</option>
+            <option value="(◕‿◕)">(◕‿◕)</option>
+            <option value="(*≧ω≦)>(*≧ω≦)</option>
+            <option value="(´｡• ᵕ •｡`)">(´｡• ᵕ •｡`)</option>
+            <option value="(´ ω `)">(´ ω `)</option>
+            <option value="(´• ω •`)">(´• ω •`)</option>
+            <!-- Add more emoticons as needed -->
+        </select>
+    </div>
+
     <table id="calendar-table">
         <!-- Calendar will be generated here -->
     </table>
 </div>
 
 <script>
-    const emoticons = ["(＾▽＾)", "(´｡• ω •｡`)", "(o^▽^o)", "(⌒▽⌒)☆", "(✿◠‿◠)", "(◕‿◕)", "(*≧ω≦)", "(´｡• ᵕ •｡`)", "(´ ω `)", "(´• ω •`)"];
+    function populateYearSelect() {
+        const yearSelect = document.getElementById('year-select');
+        const currentYear = new Date().getFullYear();
+        for (let i = currentYear - 10; i <= currentYear + 10; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.text = i;
+            if (i === currentYear) {
+                option.selected = true;
+            }
+            yearSelect.appendChild(option);
+        }
+    }
 
     function generateCalendar() {
-        const monthSelect = document.getElementById('month-select');
-        const month = parseInt(monthSelect.value);
+        const year = parseInt(document.getElementById('year-select').value);
+        const month = parseInt(document.getElementById('month-select').value);
+        const emoticon = document.getElementById('emoticon-select').value;
         const calendarTable = document.getElementById('calendar-table');
         calendarTable.innerHTML = ''; // Clear previous calendar
 
-        const date = new Date();
-        date.setMonth(month);
-        date.setDate(1);
-
+        const date = new Date(year, month, 1);
         const firstDayIndex = date.getDay();
-        const lastDay = new Date(date.getFullYear(), month + 1, 0).getDate();
+        const lastDay = new Date(year, month + 1, 0).getDate();
 
         let tableHTML = '<tr>';
         const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -89,8 +149,13 @@
         }
 
         for (let day = 1; day <= lastDay; day++) {
-            const emoticon = emoticons[Math.floor(Math.random() * emoticons.length)];
-            tableHTML += `<td>${day}<br><span class="emoticon">${emoticon}</span></td>`;
+            tableHTML += `
+                <td>
+                    ${day}<br>
+                    <span class="emoticon">${emoticon}</span><br>
+                    <textarea placeholder="Notes..."></textarea>
+                </td>
+            `;
             if ((day + firstDayIndex) % 7 === 0 && day !== lastDay) {
                 tableHTML += '</tr><tr>';
             }
@@ -100,8 +165,12 @@
         calendarTable.innerHTML = tableHTML;
     }
 
-    window.onload = generateCalendar;
+    window.onload = function() {
+        populateYearSelect();
+        generateCalendar();
+    };
 </script>
 
 </body>
 </html>
+
