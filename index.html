@@ -1,1 +1,107 @@
-Hello World!
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Emoticon Calendar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .calendar {
+            display: inline-block;
+            border: 1px solid #000;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .calendar select {
+            font-size: 16px;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        .calendar table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .calendar th, .calendar td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+            width: 14.28%;
+        }
+        .emoticon {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Japanese Emoticon Calendar</h1>
+
+<div class="calendar">
+    <label for="month-select">Select Month:</label>
+    <select id="month-select" onchange="generateCalendar()">
+        <option value="0">January</option>
+        <option value="1">February</option>
+        <option value="2">March</option>
+        <option value="3">April</option>
+        <option value="4">May</option>
+        <option value="5">June</option>
+        <option value="6">July</option>
+        <option value="7">August</option>
+        <option value="8">September</option>
+        <option value="9">October</option>
+        <option value="10">November</option>
+        <option value="11">December</option>
+    </select>
+    
+    <table id="calendar-table">
+        <!-- Calendar will be generated here -->
+    </table>
+</div>
+
+<script>
+    const emoticons = ["(＾▽＾)", "(´｡• ω •｡`)", "(o^▽^o)", "(⌒▽⌒)☆", "(✿◠‿◠)", "(◕‿◕)", "(*≧ω≦)", "(´｡• ᵕ •｡`)", "(´ ω `)", "(´• ω •`)"];
+
+    function generateCalendar() {
+        const monthSelect = document.getElementById('month-select');
+        const month = parseInt(monthSelect.value);
+        const calendarTable = document.getElementById('calendar-table');
+        calendarTable.innerHTML = ''; // Clear previous calendar
+
+        const date = new Date();
+        date.setMonth(month);
+        date.setDate(1);
+
+        const firstDayIndex = date.getDay();
+        const lastDay = new Date(date.getFullYear(), month + 1, 0).getDate();
+
+        let tableHTML = '<tr>';
+        const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        daysOfWeek.forEach(day => {
+            tableHTML += `<th>${day}</th>`;
+        });
+        tableHTML += '</tr><tr>';
+
+        for (let i = 0; i < firstDayIndex; i++) {
+            tableHTML += '<td></td>';
+        }
+
+        for (let day = 1; day <= lastDay; day++) {
+            const emoticon = emoticons[Math.floor(Math.random() * emoticons.length)];
+            tableHTML += `<td>${day}<br><span class="emoticon">${emoticon}</span></td>`;
+            if ((day + firstDayIndex) % 7 === 0 && day !== lastDay) {
+                tableHTML += '</tr><tr>';
+            }
+        }
+
+        tableHTML += '</tr>';
+        calendarTable.innerHTML = tableHTML;
+    }
+
+    window.onload = generateCalendar;
+</script>
+
+</body>
+</html>
